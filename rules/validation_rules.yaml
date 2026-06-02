@@ -1,0 +1,16 @@
+# FPP基本校验规则 - 2026年6月
+rules:
+  - id: R001
+    name: "离职员工排除检查"
+    description: "离职日期早于付款周期结束日的员工应被移除"
+    check_field: "termination_date"
+    condition: "termination_date < pay_period_end_date"
+    action_if_fail: "auto_remove_and_notify"
+
+  - id: R002
+    name: "薪资格式校验"
+    description: "basic salary字段必须为数字格式"
+    check_field: "basic_salary"
+    rule_type: "format"
+    pattern: "^[0-9]+(\\.[0-9]{2})?$"
+    action_if_fail: "mark_for_review"
