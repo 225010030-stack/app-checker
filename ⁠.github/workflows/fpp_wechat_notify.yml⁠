@@ -74,7 +74,7 @@ jobs:
           -d '{
             "msgtype": "markdown",
             "markdown": {
-              "content": "## 🚨 FPP检查报告\n\n**检查时间：** 2026年6月2日 15:25\n\n**检查结果：**\n> 总检查项：100\n> 自动通过：92 ✅\n> 发现问题：6 ⚠️\n> 需人工核实：2 🔍\n\n**发现的主要问题：**\n1. 美国-新员工ADP Timecard Supervisor未设置\n   - 详见：https://github.com/你的用户名/fpp-checker/actions\n\n2. 新加坡-离职员工无薪假数据重复\n   - 详见：https://github.com/你的用户名/fpp-checker/issues/1\n\n**需人工核实的项：**\n1. 加拿大-Timecard Supervisor不在ADP系统中\n2. 法国-新入职员工缺少附件\n\n**处理建议：**\n- 🇺🇸 美国问题：请Brandy/Jessie今日内跟进\n- 🇸🇬 新加坡问题：请联系PSSC确认\n- 🇨🇦 加拿大问题：已自动创建Issue跟踪\n\n[查看完整报告](https://github.com/你的用户名/fpp-checker/actions)"
+              "content": "## 🚨 FPP检查报告\n\n**检查时间：** 2026年6月2日 15:25\n\n**检查结果：**\n> 总检查项：100\n> 自动通过：92 ✅\n> 发现问题：6 ⚠️\n> 需人工核实：2 🔍\n\n**发现的主要问题：**\n1. 美国-新员工ADP Timecard Supervisor未设置\n   - 详见：https://github.com/annawzhang/fpp-checker/actions\n\n2. 新加坡-离职员工无薪假数据重复\n   - 详见：https://github.com/annawzhang/fpp-checker/issues/1\n\n**需人工核实的项：**\n1. 加拿大-Timecard Supervisor不在ADP系统中\n2. 法国-新入职员工缺少附件\n\n**处理建议：**\n- 🇺🇸 美国问题：请Brandy/Jessie今日内跟进\n- 🇸🇬 新加坡问题：请联系PSSC确认\n- 🇨🇦 加拿大问题：已自动创建Issue跟踪\n\n[查看完整报告](https://github.com/你的用户名/fpp-checker/actions)"
             }
           }'
 
