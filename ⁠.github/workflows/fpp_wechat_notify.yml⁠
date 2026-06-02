@@ -1,0 +1,100 @@
+# .github/workflows/fpp_wechat_notify.yml
+# 福利运营FPP检查结果推送到企业微信
+
+name: FPP Check & WeChat Notification
+
+on:
+  schedule:
+    # 每周一上午9点（UTC时间）自动运行，北京时间下午5点
+    - cron: '0 1 * * 1'
+  workflow_dispatch:  # 也支持手动触发
+  push:
+    paths:
+      - 'rules/**'  # 当规则文件更新时自动触发
+
+jobs:
+  fpp-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取最新规则配置
+        uses: actions/checkout@v4
+
+      - name: 运行FPP规则检查
+        run: |
+          echo "开始运行FPP规则检查..."
+          # 这里调用你的规则引擎脚本
+          python scripts/validator.py
+        continue-on-error: true  # 即使检查出问题也继续执行
+
+      - name: 生成检查报告
+        id: generate_report
+        run: |
+          # 模拟检查结果（实际使用时替换为真实脚本输出）
+          echo "total_checks=100" >> $GITHUB_OUTPUT
+          echo "passed=92" >> $GITHUB_OUTPUT
+          echo "failed=6" >> $GITHUB_OUTPUT
+          echo "manual_review=2" >> $GITHUB_OUTPUT
+          
+          # 生成详细报告内容
+          cat > report.txt << 'EOF'
+          🚨 FPP检查报告 - 2026年6月2日
+          
+          📊 检查汇总
+          - 总检查项：100
+          - 自动通过：92 ✅
+          - 发现问题：6 ⚠️
+          - 需人工核实：2 🔍
+          
+          ❌ 发现的问题：
+          1. 美国 - 新员工ADP Timecard Supervisor未设置
+             - 员工ID：STR470605
+             - 状态：已通知对应的Manager和HRBP
+          
+          2. 新加坡 - 离职员工无薪假数据重复传递
+             - 员工ID：SG2025037
+             - 建议：确认是否已在4月Offcycle处理
+          
+          🔍 需人工核实：
+          1. 加拿大 - Timecard Supervisor不在ADP系统中
+             - 需联系HRBP重新指定
+          
+          2. 法国 - 新入职员工缺少附件资料
+             - 缺少：合同、ID Card、Vitale Card
+          EOF
+
+      - name: 推送企业微信通知
+        env:
+          WECHAT_WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
+        run: |
+          # 构建企业微信机器人消息
+          REPORT=$(cat report.txt | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
+          
+          curl -X POST $WECHAT_WEBHOOK_URL \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "msgtype": "markdown",
+            "markdown": {
+              "content": "## 🚨 FPP检查报告\n\n**检查时间：** 2026年6月2日 15:25\n\n**检查结果：**\n> 总检查项：100\n> 自动通过：92 ✅\n> 发现问题：6 ⚠️\n> 需人工核实：2 🔍\n\n**发现的主要问题：**\n1. 美国-新员工ADP Timecard Supervisor未设置\n   - 详见：https://github.com/你的用户名/fpp-checker/actions\n\n2. 新加坡-离职员工无薪假数据重复\n   - 详见：https://github.com/你的用户名/fpp-checker/issues/1\n\n**需人工核实的项：**\n1. 加拿大-Timecard Supervisor不在ADP系统中\n2. 法国-新入职员工缺少附件\n\n**处理建议：**\n- 🇺🇸 美国问题：请Brandy/Jessie今日内跟进\n- 🇸🇬 新加坡问题：请联系PSSC确认\n- 🇨🇦 加拿大问题：已自动创建Issue跟踪\n\n[查看完整报告](https://github.com/你的用户名/fpp-checker/actions)"
+            }
+          }'
+
+      - name: 发现严重问题自动创建GitHub Issue
+        if: steps.generate_report.outputs.failed > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = require('fs').readFileSync('report.txt', 'utf8');
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 FPP检查发现${steps.generate_report.outputs.failed}个问题 - 2026-06-02`,
+              body: report,
+              labels: ['quality-check', 'need-review', 'auto-generated']
+            });
+
+      - name: 记录检查结果到日志
+        run: |
+          echo "检查完成时间：$(date)" >> check_log.txt
+          echo "检查结果已推送到企业微信和GitHub Issues" >> check_log.txt
+          cat check_log.txt
