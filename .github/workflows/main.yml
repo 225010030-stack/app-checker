@@ -1,21 +1,21 @@
 name: Test WeChat Push
 
 on:
- workflow_dispatch
+  workflow_dispatch:
 
 jobs:
- test-push:
-  runs-on: ubuntu-latest
-  steps:
-   · name: Send test message to WeCom
-    env:
-     WEBHOOK_URL: ${{ secrets.WECHATWEBHOOKURL }}
-    run: |
-     curl -X POST "$WEBHOOK_URL" \
-      -H 'Content-Type: application/json' \
-      -d '{
-       "msgtype": "markdown",
-       "markdown": {
-        "content": "## ✅ FPP检查助手测试消息\n\n这是一条测试推送，用于验证企业微信机器人是否配置成功。\n\n如果你能看到这条消息，说明配置成功！🎉"
-       }
-      }'
+  test-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send test message to WeCom
+        env:
+          WEBHOOK_URL: ${{ secrets.WECHATWEBHOOKURL }}
+        run: |
+          curl -X POST "$WEBHOOK_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "markdown",
+              "markdown": {
+                "content": "## ✅ FPP检查助手测试消息\n\n这是一条测试推送，用于验证企业微信机器人是否配置成功。\n\n如果你能看到这条消息，说明配置成功！🎉"
+              }
+            }'
