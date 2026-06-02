@@ -1,23 +1,21 @@
-name: Test WeChat Notification
+ name: Test WeChat Push
 
 on:
-  workflow_dispatch:  # 仅支持手动触发
+  workflow_dispatch:
 
 jobs:
-  test-wechat-push:
+  test-push:
     runs-on: ubuntu-latest
     steps:
-      - name: 发送测试消息到企业微信
+      - name: Send test message to WeCom
         env:
-          WECHAT_WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.WECHAT_WEBHOOK_URL }}
         run: |
-          curl -X POST $WECHAT_WEBHOOK_URL \
+          curl -X POST "$WEBHOOK_URL" \
           -H 'Content-Type: application/json' \
           -d '{
             "msgtype": "markdown",
             "markdown": {
-              "content": "## ✅ FPP检查助手测试消息\n\n这是一条测试推送，用于验证企业微信机器人是否配置成功。\n\n**测试信息**\n> 发送时间：2026年6月2日\n> 发送者：GitHub Actions\n> 仓库：fpp-checker\n\n如果你能看到这条消息，说明配置成功！🎉\n\n后续正式推送将包含FPP检查结果，请留意查看。"
+              "content": "## ✅ FPP检查助手测试消息\n\n这是一条测试推送，用于验证企业微信机器人是否配置成功。\n\n测试信息\n> 发送时间：2026年6月2日\n> 发送者：GitHub Actions\n> 仓库：fpp-checker\n\n如果你能看到这条消息，说明配置成功！🎉\n\n后续正式推送将包含FPP检查结果，请留意查看。"
             }
           }'
-          
-          echo "测试消息已发送，请检查企业微信群"
